@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг»
 
 * Студент: [Татьяна Ясюченя](https://up.htmlacademy.ru/javascript/23/user/1269007).
-* Наставник: `Неизвестно`.
+* Наставник: [Владимир Артюхов](https://htmlacademy.ru/profile/artman).
 
 ---
 
