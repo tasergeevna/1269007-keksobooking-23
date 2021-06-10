@@ -13,8 +13,6 @@ function getRandomIntInclusive(min, max) {
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-getRandomIntInclusive(6, 10);
-
 
 //Функция, возвращающая случайное число с плавающей точкой из переданного диапазона включительно.
 
@@ -26,8 +24,6 @@ function getRandomArbitrary(min, max, numberOfDecimalSpaces) {
   const dirtyResult = Math.random() * (max - min) + min;
   return Number(dirtyResult.toFixed(numberOfDecimalSpaces));
 }
-
-getRandomArbitrary(1.2, 2.3, 6);
 
 const getRandomArrayElement = (elements) => (elements[getRandomIntInclusive(0, elements.length - 1)]);
 

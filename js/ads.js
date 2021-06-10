@@ -118,7 +118,4 @@ const createAds = () => {
   };
 };
 
-const similarAds = new Array(TOTAL_ADS).fill(null).map(createAds);
-similarAds;
-
-export {createAds, similarAds};
+export {TOTAL_ADS, createAds};
