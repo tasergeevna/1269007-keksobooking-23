@@ -1,4 +1,4 @@
-// Реализация объявлений и их сравнение
+// Реализация объявлений
 
 // Создание массива из десяти сгенерированных объектов
 
@@ -118,4 +118,6 @@ const createAds = () => {
   };
 };
 
-export {TOTAL_ADS, createAds};
+const similarAds = new Array(TOTAL_ADS).fill(null).map(createAds);
+
+export {similarAds};

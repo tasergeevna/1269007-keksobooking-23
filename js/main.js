@@ -1,7 +1,6 @@
 // Точка входа
+import {generateAdMarkup} from './card.js';
+import {similarAds} from './ads.js';
 
-import './utils.js';
-import {TOTAL_ADS, createAds} from './ads.js';
+generateAdMarkup(similarAds);
 
-const similarAds = new Array(TOTAL_ADS).fill(null).map(createAds);
-similarAds;
