@@ -1,4 +1,6 @@
 // Точка входа
-import './map.js';
+import {generateAdMarkup} from './card.js';
+import {similarAds} from './ads.js';
 
+generateAdMarkup(similarAds);
 

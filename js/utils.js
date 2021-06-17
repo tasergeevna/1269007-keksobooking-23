@@ -2,7 +2,7 @@
 
 //Функция, возвращающая случайное целое число из переданного диапазона включительно.
 
-function getRandomIntInclusive(min, max) {
+const getRandomIntInclusive = (min, max) => {
   if (min < 0 || max < 0) {
     return 'Функция не принимает отрицательные значения!';
   }
@@ -12,18 +12,18 @@ function getRandomIntInclusive(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+};
 
 //Функция, возвращающая случайное число с плавающей точкой из переданного диапазона включительно.
 
-function getRandomArbitrary(min, max, numberOfDecimalSpaces) {
+const getRandomArbitrary = (min, max, numberOfDecimalSpaces) => {
   if (min < 0 || max < 0) {
     return 'Функция не принимает отрицательные значения!';
   }
 
   const dirtyResult = Math.random() * (max - min) + min;
   return Number(dirtyResult.toFixed(numberOfDecimalSpaces));
-}
+};
 
 const getRandomArrayElement = (elements) => (elements[getRandomIntInclusive(0, elements.length - 1)]);
 
