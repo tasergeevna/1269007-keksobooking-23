@@ -17,15 +17,16 @@ const insertToDOM = (target, node) => {
   target.appendChild(node);
 };
 
-const pics = document.createDocumentFragment();
-
-const addPhotosToDOMFromFragment = (array, newClass, newFragment) => {
-  for (let i = 0; i < array.length; i++) {
+const addPhotosToDOMFromFragment = (photos, newClass) => {
+  const photosFragment = document.createDocumentFragment();
+  photos.forEach((photo) => {
     const newElement = document.createElement('img');
     newElement.classList.add(newClass);
-    newElement.src =  array[i];
-    insertToDOM(newFragment, newElement);
-  }
+    newElement.src = photo;
+    insertToDOM(photosFragment, newElement);
+  });
+
+  return photosFragment;
 };
 
 const generateAdMarkup = () => {
@@ -82,8 +83,8 @@ const generateAdMarkup = () => {
   } else {
     popupElement.querySelector('.popup__description').textContent = ad.offer.description;
   }
-  addPhotosToDOMFromFragment(ad.offer.photos, '.popup__photo', pics);
 
+  const pics = addPhotosToDOMFromFragment(ad.offer.photos, '.popup__photo');
   const parentNode = similarCardsTemplate.querySelector('.popup__photos');
   insertToDOM(parentNode, pics);
   insertToDOM(popupElement, parentNode);
