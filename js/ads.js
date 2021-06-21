@@ -120,4 +120,4 @@ const createAds = () => {
 
 const similarAds = new Array(TOTAL_ADS).fill(null).map(createAds);
 
-export {similarAds};
+export {similarAds, createAds};
