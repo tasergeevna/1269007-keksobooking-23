@@ -6,6 +6,9 @@ const adTitle = document.querySelector('#title');
 const priceForANight = document.querySelector('#price');
 const rooms = document.querySelector('#room_number');
 const guests = document.querySelector('#capacity');
+const typeOfHousing = document.querySelector('#type');
+const checkIn = document.querySelector('#timein');
+const checkOut = document.querySelector('#timeout');
 
 const activation = (elemClass) => {
   const element = document.querySelector(elemClass);
@@ -120,4 +123,66 @@ const guestsValidity  = (inputGuests, inputRooms) => {
   });
 };
 
-export {activation, deactivation, titleValidity, titleValidityInProcess, priceValidity, roomsValidity, guestsValidity, adTitle, priceForANight, rooms, guests};
+const typeOfHousingValidity = (inputType, inputPrice) => {
+  inputType.addEventListener('change', (evt) => {
+    inputType.setCustomValidity('');
+    const minPrice = inputPrice.getAttribute('min');
+    if (evt.target.value === 'bungalow' && minPrice !== '0') {
+      inputPrice.setAttribute('min', '0');
+      inputPrice.setAttribute('placeholder', '0');
+    }
+
+    if (evt.target.value === 'flat' && minPrice !== '1000') {
+      inputPrice.setAttribute('min', '1000');
+      inputPrice.setAttribute('placeholder', '1000');
+    }
+
+    if (evt.target.value === 'hotel' && minPrice !== '3000') {
+      inputPrice.setAttribute('min', '3000');
+      inputPrice.setAttribute('placeholder', '3000');
+    }
+
+    if (evt.target.value === 'house' && minPrice !== '5000') {
+      inputPrice.setAttribute('min', '5000');
+      inputPrice.setAttribute('placeholder', '5000');
+    }
+
+    if (evt.target.value === 'palace' && minPrice !== '10000') {
+      inputPrice.setAttribute('min', '10000');
+      inputPrice.setAttribute('placeholder', '10000');
+    }
+    inputType.reportValidity();
+  });
+};
+
+const checkInValidity = (checkin, checkout) => {
+  checkin.addEventListener('change', (evt) => {
+    if (evt.target.value === '12:00') {
+      checkout.value = '12:00';
+    }
+    if (evt.target.value === '13:00') {
+      checkout.value = '13:00';
+    }
+    if (evt.target.value === '14:00') {
+      checkout.value = '14:00';
+    }
+    checkin.reportValidity();
+  });
+};
+
+const checkOutValidity = (checkout, chekin) => {
+  checkout.addEventListener('change', (evt) => {
+    if (evt.target.value === '12:00') {
+      chekin.value = '12:00';
+    }
+    if (evt.target.value === '13:00') {
+      chekin.value = '13:00';
+    }
+    if (evt.target.value === '14:00') {
+      chekin.value = '14:00';
+    }
+    checkout.reportValidity();
+  });
+};
+
+export {activation, deactivation, titleValidity, titleValidityInProcess, priceValidity, roomsValidity, guestsValidity, typeOfHousingValidity, checkInValidity, checkOutValidity, adTitle, priceForANight, rooms, guests, typeOfHousing, checkIn, checkOut};
