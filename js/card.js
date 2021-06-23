@@ -17,12 +17,19 @@ const insertToDOM = (target, node) => {
   target.appendChild(node);
 };
 
-const addPhotosToDOMFromFragment = (photos, newClass) => {
+const addPhotosToDOMFromFragment = (photos, newClass, currentTemplate) => {
+  const imgTemplate = currentTemplate.querySelector('.popup__photo');
+  const imgWidth = imgTemplate.getAttribute('width');
+  const imgHeight = imgTemplate.getAttribute('height');
+  const imgAlt = imgTemplate.getAttribute('alt');
   const photosFragment = document.createDocumentFragment();
   photos.forEach((photo) => {
     const newElement = document.createElement('img');
     newElement.classList.add(newClass);
     newElement.src = photo;
+    newElement.setAttribute('width', imgWidth);
+    newElement.setAttribute('height', imgHeight);
+    newElement.setAttribute('alt', imgAlt);
     insertToDOM(photosFragment, newElement);
   });
 
@@ -84,8 +91,9 @@ const generateAdMarkup = () => {
     popupElement.querySelector('.popup__description').textContent = ad.offer.description;
   }
 
-  const pics = addPhotosToDOMFromFragment(ad.offer.photos, '.popup__photo');
-  const parentNode = similarCardsTemplate.querySelector('.popup__photos');
+  const pics = addPhotosToDOMFromFragment(ad.offer.photos, 'popup__photo', similarCardsTemplate);
+  const parentNode = popupElement.querySelector('.popup__photos');
+  parentNode.innerHTML = '';
   insertToDOM(parentNode, pics);
   insertToDOM(popupElement, parentNode);
 

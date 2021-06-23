@@ -1,7 +1,10 @@
 // Реализация формы: заполнение, условия заполнения
 
-const MIN_TITLE_LENGTH = 30;
-const MAX_TITLE_LENGTH = 100;
+const TITLE_LENGTH = {
+  MIN: 30,
+  MAX: 100,
+};
+
 const adTitle = document.querySelector('#title');
 const priceForANight = document.querySelector('#price');
 const rooms = document.querySelector('#room_number');
@@ -17,24 +20,23 @@ const activation = (elemClass) => {
   }
 
   const elems = element.querySelectorAll('select, input, textarea, button');
-  for (let i = 0; i < elems.length-1; i++) {
-    if (elems[i].hasAttribute('disabled')) {
-      elems[i].removeAttribute('disabled', 'disabled');
+  elems.forEach((elem) => {
+    if (elem.hasAttribute('disabled')) {
+      elem.removeAttribute('disabled', 'disabled');
     }
-  }
+  });
 };
 
 const deactivation = (elemClass) => {
   const element = document.querySelector(elemClass);
-  if (!element.classList.contains(`${elemClass}--disabled`)) {
-    element.classList.add(`${elemClass}--disabled`);
-  }
+  element.classList.add(`${elemClass}--disabled`);
+
   const elems = element.querySelectorAll('select, input, button, textarea');
-  for (let i = 0; i < elems.length-1; i++) {
-    if (!elems[i].hasAttribute('disabled')) {
-      elems[i].setAttribute('disabled', 'disabled');
+  elems.forEach((elem) => {
+    if (!elem.hasAttribute('disabled')) {
+      elem.setAttribute('disabled', 'disabled');
     }
-  }
+  });
 };
 
 const titleValidity = (inputName) => {
@@ -54,10 +56,10 @@ const titleValidity = (inputName) => {
 const titleValidityInProcess = (inputName) => {
   inputName.addEventListener('input', () => {
     const valueLength = adTitle.value.length;
-    if (valueLength < MIN_TITLE_LENGTH) {
-      inputName.setCustomValidity(`Ещё ${  MIN_TITLE_LENGTH - valueLength } симв.`);
-    } else if (valueLength > MAX_TITLE_LENGTH) {
-      inputName.setCustomValidity(`Удалите лишние ${  valueLength - MAX_TITLE_LENGTH } симв.`);
+    if (valueLength < TITLE_LENGTH.MIN) {
+      inputName.setCustomValidity(`Ещё ${  TITLE_LENGTH.MIN - valueLength } симв.`);
+    } else if (valueLength > TITLE_LENGTH.MAX) {
+      inputName.setCustomValidity(`Удалите лишние ${  valueLength - TITLE_LENGTH.MAX } симв.`);
     } else {
       inputName.setCustomValidity('');
     }
@@ -185,4 +187,15 @@ const checkOutValidity = (checkout, chekin) => {
   });
 };
 
-export {activation, deactivation, titleValidity, titleValidityInProcess, priceValidity, roomsValidity, guestsValidity, typeOfHousingValidity, checkInValidity, checkOutValidity, adTitle, priceForANight, rooms, guests, typeOfHousing, checkIn, checkOut};
+const formValidity = () => {
+  titleValidity(adTitle);
+  titleValidityInProcess(adTitle);
+  priceValidity(priceForANight);
+  roomsValidity(rooms, guests);
+  guestsValidity(guests, rooms);
+  typeOfHousingValidity(typeOfHousing, priceForANight);
+  checkInValidity(checkIn, checkOut);
+  checkOutValidity(checkOut, checkIn);
+};
+
+export {activation, deactivation, formValidity};
