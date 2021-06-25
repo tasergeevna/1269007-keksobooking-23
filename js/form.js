@@ -5,6 +5,9 @@ const TITLE_LENGTH = {
   MAX: 100,
 };
 
+const FORM_CLASS = '.ad-form';
+const MAP_FILTERS_CLASS = '.map__filters';
+
 const adTitle = document.querySelector('#title');
 const priceForANight = document.querySelector('#price');
 const rooms = document.querySelector('#room_number');
@@ -19,7 +22,7 @@ const activation = (elemClass) => {
     element.classList.remove(`${elemClass}--disabled`);
   }
 
-  const elems = element.querySelectorAll('select, input, textarea, button');
+  const elems = element.querySelectorAll('select, input:not(#address), textarea, button');
   elems.forEach((elem) => {
     if (elem.hasAttribute('disabled')) {
       elem.removeAttribute('disabled', 'disabled');
@@ -198,4 +201,4 @@ const formValidity = () => {
   checkOutValidity(checkOut, checkIn);
 };
 
-export {activation, deactivation, formValidity};
+export {activation, deactivation, FORM_CLASS, MAP_FILTERS_CLASS, formValidity};

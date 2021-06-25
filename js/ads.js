@@ -4,8 +4,6 @@
 
 import {getRandomIntInclusive, getRandomArbitrary, getRandomArrayElement, getRandomArray} from './utils.js';
 
-const TOTAL_ADS = 10;
-
 const AVATARS = [
   'img/avatars/user01.png',
   'img/avatars/user02.png',
@@ -117,8 +115,5 @@ const createAds = () => {
     location,
   };
 };
-
-const similarAds = new Array(TOTAL_ADS).fill(null).map(createAds);
-similarAds;
 
 export {createAds};

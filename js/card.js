@@ -99,6 +99,8 @@ const generateAdMarkup = () => {
 
   popupElement.querySelector('.popup__avatar').src = ad.author;
   insertToDOM(popupElementsList, popupElement);
+
+  return popupElement;
 };
 
 export {generateAdMarkup};

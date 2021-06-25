@@ -1,10 +1,9 @@
 // Точка входа
-import {generateAdMarkup} from './card.js';
-import {activation, deactivation, formValidity} from './form.js';
+import {activation, deactivation, FORM_CLASS, MAP_FILTERS_CLASS, formValidity} from './form.js';
+import './map.js';
 
-deactivation('.ad-form');
-deactivation('.map__filters');
-generateAdMarkup();
-activation('.ad-form');
-activation('.map__filters');
+deactivation(FORM_CLASS);
+deactivation(MAP_FILTERS_CLASS);
+activation(FORM_CLASS);
+activation(MAP_FILTERS_CLASS);
 formValidity();
