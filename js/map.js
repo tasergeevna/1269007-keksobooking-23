@@ -1,14 +1,11 @@
 // Реализация карты
 import {activation, FORM_CLASS, MAP_FILTERS_CLASS} from './form.js';
-import {createAds} from './ads.js';
 import {generateAdMarkup} from './card.js';
 
 const TOKIO_CENTER = {
-  LAT: 35.41,
-  LNG: 139.41,
+  LAT: 35.68,
+  LNG: 139.75,
 };
-
-const TOTAL_POINTS = 10;
 
 const mapClass = 'map-canvas';
 
@@ -81,8 +78,6 @@ const setMainPinOnMap = (intMap, centerCoords, inputWithAddress, buttonThatReset
   });
 };
 
-const similarAds = new Array(TOTAL_POINTS).fill(null).map(createAds);
-
 const setSimplePinsOnMap = (adsArray, intMap) => {
 
   const simplePinIcon = L.icon({
@@ -91,7 +86,9 @@ const setSimplePinsOnMap = (adsArray, intMap) => {
     iconAnchor: [20, 40],
   });
 
-  adsArray.forEach(({location: { lat, lng }}) => {
+  adsArray.forEach((ad) => {
+    const {location: { lat, lng }} = ad;
+
     const marker = L.marker({
       lat,
       lng,
@@ -104,7 +101,7 @@ const setSimplePinsOnMap = (adsArray, intMap) => {
 
     marker
       .addTo(intMap)
-      .bindPopup(generateAdMarkup(),
+      .bindPopup(generateAdMarkup(ad),
         {
           keepInView: true,
         },
@@ -112,4 +109,4 @@ const setSimplePinsOnMap = (adsArray, intMap) => {
   });
 };
 
-export {setAddress, addInteractiveMap, setMainPinOnMap, setSimplePinsOnMap, TOKIO_CENTER, addressInput, mapClass, resetButton, similarAds};
+export {setAddress, addInteractiveMap, setMainPinOnMap, setSimplePinsOnMap, TOKIO_CENTER, addressInput, mapClass, resetButton};

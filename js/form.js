@@ -1,4 +1,8 @@
-// Реализация формы: заполнение, условия заполнения
+// Реализация формы: заполнение, условия заполнения, валидация
+import {sendData} from './api.js';
+import {addressInput, setAddress, setMainPinOnMap, TOKIO_CENTER, resetButton} from './map.js';
+import {interactiveMap} from './main.js';
+import { showSuccess } from './utils.js';
 
 const TITLE_LENGTH = {
   MIN: 30,
@@ -8,6 +12,7 @@ const TITLE_LENGTH = {
 const FORM_CLASS = '.ad-form';
 const MAP_FILTERS_CLASS = '.map__filters';
 
+const form = document.querySelector(FORM_CLASS);
 const adTitle = document.querySelector('#title');
 const priceForANight = document.querySelector('#price');
 const rooms = document.querySelector('#room_number');
@@ -15,6 +20,14 @@ const guests = document.querySelector('#capacity');
 const typeOfHousing = document.querySelector('#type');
 const checkIn = document.querySelector('#timein');
 const checkOut = document.querySelector('#timeout');
+const features = document.querySelectorAll('.features__checkbox');
+const fieldset = document.querySelector('#description');
+
+const filtersHousingType = document.querySelector('#housing-type');
+const filtersHousingPrice = document.querySelector('#housing-price');
+const filtersHousingRooms = document.querySelector('#housing-rooms');
+const filtersHousingGuests = document.querySelector('#housing-guests');
+const filtersHousingFeatures = document.querySelectorAll('.map__checkbox');
 
 const activation = (elemClass) => {
   const element = document.querySelector(elemClass);
@@ -110,6 +123,7 @@ const roomsValidity = (inputRooms, inputGuests) => {
 
 const guestsValidity  = (inputGuests, inputRooms) => {
   inputGuests.addEventListener('change', (evt) => {
+
     inputRooms.setCustomValidity('');
     if (evt.target.value === '1' && inputRooms.value !== '1' && inputRooms.value !== '2' && inputRooms.value !=='3') {
       inputGuests.setCustomValidity('Можно выбрать одну, две или три комнаты');
@@ -201,4 +215,63 @@ const formValidity = () => {
   checkOutValidity(checkOut, checkIn);
 };
 
-export {activation, deactivation, FORM_CLASS, MAP_FILTERS_CLASS, formValidity};
+const resetForm = () => {
+
+  adTitle.value = '';
+
+  setAddress(addressInput, TOKIO_CENTER);
+
+  priceForANight.value = '';
+
+  fieldset.value = '';
+
+  features.forEach((feature) => {
+    feature.checked = false;
+  });
+
+  rooms.value = '1';
+
+  guests.value = '1';
+
+  typeOfHousing.value = 'flat';
+
+  checkIn.value = '12:00';
+
+  checkOut.value = '12:00';
+
+  filtersHousingType.value = 'any';
+
+  filtersHousingPrice.value = 'any';
+
+  filtersHousingRooms.value = 'any';
+
+  filtersHousingGuests.value = 'any';
+
+  filtersHousingFeatures.forEach((housingFeatures) => {
+    housingFeatures.checked = false;
+  });
+
+  setMainPinOnMap(interactiveMap, TOKIO_CENTER, addressInput, resetButton);
+};
+
+
+const setUserFormSubmit = (onSuccess) => {
+  form.addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    addressInput.removeAttribute('disabled', 'disabled');
+
+    sendData(
+      () => {
+        onSuccess();
+        showSuccess();
+      },
+      new FormData(evt.target),
+    );
+  });
+
+  resetButton.addEventListener('click', () => {
+    resetForm();
+  });
+};
+
+export {activation, deactivation, FORM_CLASS, MAP_FILTERS_CLASS, formValidity, setUserFormSubmit, resetForm};
