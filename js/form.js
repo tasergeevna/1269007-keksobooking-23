@@ -243,7 +243,8 @@ const setUserFormSubmit = (formClass) => {
 };
 
 const setUserFormReset = (formClass, interactiveMap, mainPin, centerCoords) => {
-  document.querySelector(formClass).addEventListener('reset', () => {
+  document.querySelector(formClass).addEventListener('reset', (evt) => {
+    evt.preventDefault();
     mainPin.setLatLng({
       lat: centerCoords.LAT,
       lng: centerCoords.LNG,
