@@ -1,7 +1,6 @@
 // Реализация формы: заполнение, условия заполнения, валидация
 import {sendData} from './api.js';
-import {addressInput, setAddress, setMainPinOnMap, TOKIO_CENTER, resetButton} from './map.js';
-import {interactiveMap} from './main.js';
+import {addressInput, setAddress, TOKIO_CENTER} from './map.js';
 import { showSuccess } from './utils.js';
 
 const TITLE_LENGTH = {
@@ -12,7 +11,6 @@ const TITLE_LENGTH = {
 const FORM_CLASS = '.ad-form';
 const MAP_FILTERS_CLASS = '.map__filters';
 
-const form = document.querySelector(FORM_CLASS);
 const adTitle = document.querySelector('#title');
 const priceForANight = document.querySelector('#price');
 const rooms = document.querySelector('#room_number');
@@ -31,9 +29,7 @@ const filtersHousingFeatures = document.querySelectorAll('.map__checkbox');
 
 const activation = (elemClass) => {
   const element = document.querySelector(elemClass);
-  if (element.classList.contains(`${elemClass}--disabled`)) {
-    element.classList.remove(`${elemClass}--disabled`);
-  }
+  element.classList.remove(`${elemClass}--disabled`);
 
   const elems = element.querySelectorAll('select, input:not(#address), textarea, button');
   elems.forEach((elem) => {
@@ -104,7 +100,6 @@ const priceValidity = (inputName) => {
 
 const roomsValidity = (inputRooms, inputGuests) => {
   inputRooms.addEventListener('change', () => {
-    inputRooms.setCustomValidity('');
     if (inputRooms.value === '1' && inputGuests.value !== '1') {
       inputRooms.setCustomValidity('Можно забронировать для одного гостя');
     }
@@ -123,8 +118,6 @@ const roomsValidity = (inputRooms, inputGuests) => {
 
 const guestsValidity  = (inputGuests, inputRooms) => {
   inputGuests.addEventListener('change', (evt) => {
-
-    inputRooms.setCustomValidity('');
     if (evt.target.value === '1' && inputRooms.value !== '1' && inputRooms.value !== '2' && inputRooms.value !=='3') {
       inputGuests.setCustomValidity('Можно выбрать одну, две или три комнаты');
     }
@@ -145,28 +138,27 @@ const guestsValidity  = (inputGuests, inputRooms) => {
 const typeOfHousingValidity = (inputType, inputPrice) => {
   inputType.addEventListener('change', (evt) => {
     inputType.setCustomValidity('');
-    const minPrice = inputPrice.getAttribute('min');
-    if (evt.target.value === 'bungalow' && minPrice !== '0') {
+    if (evt.target.value === 'bungalow') {
       inputPrice.setAttribute('min', '0');
       inputPrice.setAttribute('placeholder', '0');
     }
 
-    if (evt.target.value === 'flat' && minPrice !== '1000') {
+    if (evt.target.value === 'flat') {
       inputPrice.setAttribute('min', '1000');
       inputPrice.setAttribute('placeholder', '1000');
     }
 
-    if (evt.target.value === 'hotel' && minPrice !== '3000') {
+    if (evt.target.value === 'hotel') {
       inputPrice.setAttribute('min', '3000');
       inputPrice.setAttribute('placeholder', '3000');
     }
 
-    if (evt.target.value === 'house' && minPrice !== '5000') {
+    if (evt.target.value === 'house') {
       inputPrice.setAttribute('min', '5000');
       inputPrice.setAttribute('placeholder', '5000');
     }
 
-    if (evt.target.value === 'palace' && minPrice !== '10000') {
+    if (evt.target.value === 'palace') {
       inputPrice.setAttribute('min', '10000');
       inputPrice.setAttribute('placeholder', '10000');
     }
@@ -176,30 +168,14 @@ const typeOfHousingValidity = (inputType, inputPrice) => {
 
 const checkInValidity = (checkin, checkout) => {
   checkin.addEventListener('change', (evt) => {
-    if (evt.target.value === '12:00') {
-      checkout.value = '12:00';
-    }
-    if (evt.target.value === '13:00') {
-      checkout.value = '13:00';
-    }
-    if (evt.target.value === '14:00') {
-      checkout.value = '14:00';
-    }
+    checkout.value = evt.target.value;
     checkin.reportValidity();
   });
 };
 
 const checkOutValidity = (checkout, chekin) => {
   checkout.addEventListener('change', (evt) => {
-    if (evt.target.value === '12:00') {
-      chekin.value = '12:00';
-    }
-    if (evt.target.value === '13:00') {
-      chekin.value = '13:00';
-    }
-    if (evt.target.value === '14:00') {
-      chekin.value = '14:00';
-    }
+    chekin.value = evt.target.value;
     checkout.reportValidity();
   });
 };
@@ -216,10 +192,7 @@ const formValidity = () => {
 };
 
 const resetForm = () => {
-
   adTitle.value = '';
-
-  setAddress(addressInput, TOKIO_CENTER);
 
   priceForANight.value = '';
 
@@ -251,27 +224,36 @@ const resetForm = () => {
     housingFeatures.checked = false;
   });
 
-  setMainPinOnMap(interactiveMap, TOKIO_CENTER, addressInput, resetButton);
+  setAddress(addressInput, TOKIO_CENTER);
 };
 
 
-const setUserFormSubmit = (onSuccess) => {
-  form.addEventListener('submit', (evt) => {
+const setUserFormSubmit = (formClass) => {
+  document.querySelector(formClass).addEventListener('submit', (evt) => {
     evt.preventDefault();
     addressInput.removeAttribute('disabled', 'disabled');
-
     sendData(
       () => {
-        onSuccess();
+        resetForm();
         showSuccess();
       },
       new FormData(evt.target),
     );
   });
+};
 
-  resetButton.addEventListener('click', () => {
+const setUserFormReset = (formClass, interactiveMap, mainPin, centerCoords) => {
+  document.querySelector(formClass).addEventListener('reset', () => {
+    mainPin.setLatLng({
+      lat: centerCoords.LAT,
+      lng: centerCoords.LNG,
+    });
+    interactiveMap.setView({
+      lat: centerCoords.LAT,
+      lng: centerCoords.LNG,
+    }, 16);
     resetForm();
   });
 };
 
-export {activation, deactivation, FORM_CLASS, MAP_FILTERS_CLASS, formValidity, setUserFormSubmit, resetForm};
+export {activation, deactivation, FORM_CLASS, MAP_FILTERS_CLASS, formValidity, setUserFormSubmit, setUserFormReset};

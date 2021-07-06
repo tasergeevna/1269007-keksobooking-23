@@ -7,9 +7,23 @@ const TOKIO_CENTER = {
   LNG: 139.75,
 };
 
-const mapClass = 'map-canvas';
+const TILE = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 
-const resetButton = document.querySelector('.ad-form__reset');
+const TILE_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+
+const MAIN_PIN_URL = '../img/main-pin.svg';
+
+const MAIN_PIN_SIZE = [52, 52];
+
+const MAIN_PIN_ANCHOR = [26, 52];
+
+const SIMPLE_PIN_URL = '../img/pin.svg';
+
+const SIMPLE_PIN_SIZE = [40, 40];
+
+const SIMPLE_PIN_ANCHOR = [20, 40];
+
+const mapClass = 'map-canvas';
 
 const addressInput = document.querySelector('#address');
 
@@ -30,21 +44,20 @@ const addInteractiveMap = (classForMap, centerCoords) => {
     }, 16);
 
   L.tileLayer(
-    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    TILE,
     {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      attribution: TILE_ATTRIBUTION,
     },
   ).addTo(map);
 
   return map;
 };
 
-const setMainPinOnMap = (intMap, centerCoords, inputWithAddress, buttonThatResets) => {
-
+const setMainPinOnMap = (intMap, centerCoords, inputWithAddress) => {
   const mainPinIcon = L.icon({
-    iconUrl: '../img/main-pin.svg',
-    iconSize: [52, 52],
-    iconAnchor: [26, 52],
+    iconUrl: MAIN_PIN_URL,
+    iconSize: MAIN_PIN_SIZE,
+    iconAnchor: MAIN_PIN_ANCHOR,
   });
 
   const mainPinMarker = L.marker(
@@ -66,24 +79,15 @@ const setMainPinOnMap = (intMap, centerCoords, inputWithAddress, buttonThatReset
     evt.target.getLatLng();
   });
 
-  buttonThatResets.addEventListener('click', () => {
-    mainPinMarker.setLatLng({
-      lat: centerCoords.LAT,
-      lng: centerCoords.LNG,
-    });
-    intMap.setView({
-      lat: centerCoords.LAT,
-      lng: centerCoords.LNG,
-    }, 16);
-  });
+  return mainPinMarker;
 };
 
 const setSimplePinsOnMap = (adsArray, intMap) => {
 
   const simplePinIcon = L.icon({
-    iconUrl: '../img/pin.svg',
-    iconSize: [40, 40],
-    iconAnchor: [20, 40],
+    iconUrl: SIMPLE_PIN_URL,
+    iconSize: SIMPLE_PIN_SIZE,
+    iconAnchor: SIMPLE_PIN_ANCHOR,
   });
 
   adsArray.forEach((ad) => {
@@ -109,4 +113,4 @@ const setSimplePinsOnMap = (adsArray, intMap) => {
   });
 };
 
-export {setAddress, addInteractiveMap, setMainPinOnMap, setSimplePinsOnMap, TOKIO_CENTER, addressInput, mapClass, resetButton};
+export {setAddress, addInteractiveMap, setMainPinOnMap, setSimplePinsOnMap, TOKIO_CENTER, addressInput, mapClass};

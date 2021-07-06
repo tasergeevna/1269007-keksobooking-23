@@ -1,14 +1,19 @@
 import {showAlert, showError} from './utils.js';
+import { deactivation, MAP_FILTERS_CLASS } from './form.js';
 
 const TOTAL_POINTS = 10;
 
+const GET_URL = 'https://23.javascript.pages.academy/keksobooking/data';
+const POST_URL = 'https://23.javascript.pages.academy/keksobooking';
+
 const getData = (onSuccess) => {
-  fetch('https://23.javascript.pages.academy/keksobooking/data')
+  fetch(GET_URL)
     .then((response) => {
       if (response.ok) {
         return response.json();
       }
-      showAlert('Не удалось отправить форму. Попробуйте ещё раз');
+      showAlert('Не удалось получить объявления. Попробуйте ещё раз');
+      deactivation(MAP_FILTERS_CLASS);
       throw Error();
     })
     .then((ads) => {
@@ -16,10 +21,9 @@ const getData = (onSuccess) => {
     });
 };
 
-
 const sendData = (onSuccess, body) => {
   fetch(
-    'https://23.javascript.pages.academy/keksobooking',
+    POST_URL,
     {
       method: 'POST',
       body,

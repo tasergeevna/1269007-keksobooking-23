@@ -46,7 +46,6 @@ const getRandomArray = (array) => {
   return result;
 };
 
-
 const showAlert = (message) => {
   const alertContainer = document.createElement('div');
   alertContainer.style.zIndex = 100;
@@ -65,7 +64,6 @@ const showAlert = (message) => {
     alertContainer.remove();
   }, ALERT_SHOW_TIME);
 };
-
 
 const showSuccess = () => {
   const successContainer = successTemplate.cloneNode(true);
