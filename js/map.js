@@ -11,17 +11,17 @@ const TILE = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 
 const TILE_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
-const MAIN_PIN_URL = '../img/main-pin.svg';
+const MAIN_PIN = {
+  URL: '../img/main-pin.svg',
+  SIZE: [52, 52],
+  ANCHOR: [26, 52],
+};
 
-const MAIN_PIN_SIZE = [52, 52];
-
-const MAIN_PIN_ANCHOR = [26, 52];
-
-const SIMPLE_PIN_URL = '../img/pin.svg';
-
-const SIMPLE_PIN_SIZE = [40, 40];
-
-const SIMPLE_PIN_ANCHOR = [20, 40];
+const SIMPLE_PIN = {
+  URL: '../img/pin.svg',
+  SIZE: [40, 40],
+  ANCHOR: [20, 40],
+};
 
 const mapClass = 'map-canvas';
 
@@ -55,9 +55,9 @@ const addInteractiveMap = (classForMap, centerCoords) => {
 
 const setMainPinOnMap = (intMap, centerCoords, inputWithAddress) => {
   const mainPinIcon = L.icon({
-    iconUrl: MAIN_PIN_URL,
-    iconSize: MAIN_PIN_SIZE,
-    iconAnchor: MAIN_PIN_ANCHOR,
+    iconUrl: MAIN_PIN.URL,
+    iconSize: MAIN_PIN.SIZE,
+    iconAnchor: MAIN_PIN.ANCHOR,
   });
 
   const mainPinMarker = L.marker(
@@ -85,9 +85,9 @@ const setMainPinOnMap = (intMap, centerCoords, inputWithAddress) => {
 const setSimplePinsOnMap = (adsArray, intMap) => {
 
   const simplePinIcon = L.icon({
-    iconUrl: SIMPLE_PIN_URL,
-    iconSize: SIMPLE_PIN_SIZE,
-    iconAnchor: SIMPLE_PIN_ANCHOR,
+    iconUrl: SIMPLE_PIN.URL,
+    iconSize: SIMPLE_PIN.SIZE,
+    iconAnchor: SIMPLE_PIN.ANCHOR,
   });
 
   adsArray.forEach((ad) => {

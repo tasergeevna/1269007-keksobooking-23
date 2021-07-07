@@ -27,6 +27,14 @@ const filtersHousingRooms = document.querySelector('#housing-rooms');
 const filtersHousingGuests = document.querySelector('#housing-guests');
 const filtersHousingFeatures = document.querySelectorAll('.map__checkbox');
 
+const typeToPrice = {
+  bungalow: '0',
+  flat: '1000',
+  hotel: '3000',
+  house: '5000',
+  palace: '10000',
+};
+
 const activation = (elemClass) => {
   const element = document.querySelector(elemClass);
   element.classList.remove(`${elemClass}--disabled`);
@@ -100,9 +108,11 @@ const priceValidity = (inputName) => {
 
 const roomsValidity = (inputRooms, inputGuests) => {
   inputRooms.addEventListener('change', () => {
+    inputRooms.setCustomValidity('');
     if (inputRooms.value === '1' && inputGuests.value !== '1') {
       inputRooms.setCustomValidity('Можно забронировать для одного гостя');
     }
+
     if (inputRooms.value === '2' && inputGuests.value !== '1' && inputGuests.value !== '2') {
       inputRooms.setCustomValidity('Можно забронировать для одного или двух гостей');
     }
@@ -112,23 +122,31 @@ const roomsValidity = (inputRooms, inputGuests) => {
     if (inputRooms.value === '100' && inputGuests.value !== '0') {
       inputRooms.setCustomValidity('Нельзя забронировать для гостей');
     }
+    if (inputRooms.value === inputGuests.value) {
+      inputGuests.setCustomValidity('');
+    }
+
     inputRooms.reportValidity();
   });
 };
 
 const guestsValidity  = (inputGuests, inputRooms) => {
-  inputGuests.addEventListener('change', (evt) => {
-    if (evt.target.value === '1' && inputRooms.value !== '1' && inputRooms.value !== '2' && inputRooms.value !=='3') {
+  inputGuests.addEventListener('change', () => {
+    inputGuests.setCustomValidity('');
+    if (inputGuests.value === '1' && inputRooms.value !== '1' && inputRooms.value !== '2' && inputRooms.value !=='3') {
       inputGuests.setCustomValidity('Можно выбрать одну, две или три комнаты');
     }
-    if (evt.target.value === '2' && inputRooms.value !== '2' && inputRooms.value !== '3') {
+    if (inputGuests.value === '2' && inputRooms.value !== '2' && inputRooms.value !== '3') {
       inputGuests.setCustomValidity('Можно выбрать две или три комнаты');
     }
-    if (evt.target.value === '3' && inputRooms.value !== '3') {
+    if (inputGuests.value === '3' && inputRooms.value !== '3') {
       inputGuests.setCustomValidity('Можно выбрать три комнаты');
     }
-    if (evt.target.value === '0' && inputRooms.value !== '100') {
+    if (inputGuests.value === '0' && inputRooms.value !== '100') {
       inputGuests.setCustomValidity('Можно выбрать помещение для мероприятий');
+    }
+    if (inputRooms.value === inputGuests.value) {
+      inputRooms.setCustomValidity('');
     }
 
     inputGuests.reportValidity();
@@ -138,30 +156,9 @@ const guestsValidity  = (inputGuests, inputRooms) => {
 const typeOfHousingValidity = (inputType, inputPrice) => {
   inputType.addEventListener('change', (evt) => {
     inputType.setCustomValidity('');
-    if (evt.target.value === 'bungalow') {
-      inputPrice.setAttribute('min', '0');
-      inputPrice.setAttribute('placeholder', '0');
-    }
-
-    if (evt.target.value === 'flat') {
-      inputPrice.setAttribute('min', '1000');
-      inputPrice.setAttribute('placeholder', '1000');
-    }
-
-    if (evt.target.value === 'hotel') {
-      inputPrice.setAttribute('min', '3000');
-      inputPrice.setAttribute('placeholder', '3000');
-    }
-
-    if (evt.target.value === 'house') {
-      inputPrice.setAttribute('min', '5000');
-      inputPrice.setAttribute('placeholder', '5000');
-    }
-
-    if (evt.target.value === 'palace') {
-      inputPrice.setAttribute('min', '10000');
-      inputPrice.setAttribute('placeholder', '10000');
-    }
+    const type = evt.target.value;
+    inputPrice.setAttribute('min', typeToPrice[type]);
+    inputPrice.setAttribute('placeholder', typeToPrice[type]);
     inputType.reportValidity();
   });
 };

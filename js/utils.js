@@ -2,7 +2,10 @@
 
 const ALERT_SHOW_TIME = 5000;
 const successTemplate = document.querySelector('#success').content.querySelector('.success');
+const successContainer = successTemplate.cloneNode(true);
 const errorTemplate = document.querySelector('#error').content.querySelector('.error');
+const errorContainer = errorTemplate.cloneNode(true);
+const errorButton = errorTemplate.querySelector('.error__button');
 
 //Функция, возвращающая случайное целое число из переданного диапазона включительно.
 
@@ -65,40 +68,51 @@ const showAlert = (message) => {
   }, ALERT_SHOW_TIME);
 };
 
+const keyDownCallbackSuccess = (evt) => {
+  if (evt.key === 'Escape' || evt.key === 27) {
+    successContainer.remove();
+    document.body.removeEventListener('keydown', keyDownCallbackSuccess);
+  }
+};
+
+const clickCallbackSuccess = () => {
+  successContainer.remove();
+  document.body.removeEventListener('click', clickCallbackSuccess);
+};
+
 const showSuccess = () => {
-  const successContainer = successTemplate.cloneNode(true);
   document.body.append(successContainer);
 
-  document.body.addEventListener('keydown', (evt) => {
-    if (evt.key === 'Escape' || evt.key === 27) {
-      successContainer.remove();
-    }
-  });
+  document.body.addEventListener('keydown', keyDownCallbackSuccess);
 
-  document.body.addEventListener('click', () => {
-    successContainer.remove();
-  });
+  document.body.addEventListener('click', clickCallbackSuccess);
+};
+
+const keyDownCallbackError = (evt) => {
+  if (evt.key === 'Escape' || evt.key === 27) {
+    errorContainer.remove();
+    document.body.removeEventListener('keydown', keyDownCallbackError);
+  }
+};
+
+const clickCallbackError = () => {
+  errorContainer.remove();
+  document.body.removeEventListener('click', clickCallbackError);
+};
+
+const callbackErrorButton = () => {
+  errorContainer.remove();
+  document.body.removeEventListener('click', callbackErrorButton);
 };
 
 const showError = () => {
-  const errorContainer = errorTemplate.cloneNode(true);
-  const errorButton = errorTemplate.querySelector('.error__button');
   document.body.append(errorContainer);
 
-  document.body.addEventListener('keydown', (evt) => {
-    if (evt.key === 'Escape' || evt.key === 27) {
-      errorContainer.remove();
-    }
-  });
+  document.body.addEventListener('keydown', keyDownCallbackError);
 
-  document.body.addEventListener('click', () => {
-    errorContainer.remove();
-  });
+  document.body.addEventListener('click', clickCallbackError);
 
-  errorButton.addEventListener('click', () => {
-    errorContainer.remove();
-  });
-
+  errorButton.addEventListener('click', callbackErrorButton);
 };
 
 export {getRandomIntInclusive, getRandomArbitrary, getRandomArrayElement, getNewArrayLenght, getRandomArray, showAlert, showSuccess, showError};
