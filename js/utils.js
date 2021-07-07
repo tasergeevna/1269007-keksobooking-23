@@ -1,5 +1,12 @@
 // Вспомогательные функции
 
+const ALERT_SHOW_TIME = 5000;
+const successTemplate = document.querySelector('#success').content.querySelector('.success');
+const successContainer = successTemplate.cloneNode(true);
+const errorTemplate = document.querySelector('#error').content.querySelector('.error');
+const errorContainer = errorTemplate.cloneNode(true);
+const errorButton = errorTemplate.querySelector('.error__button');
+
 //Функция, возвращающая случайное целое число из переданного диапазона включительно.
 
 const getRandomIntInclusive = (min, max) => {
@@ -42,4 +49,70 @@ const getRandomArray = (array) => {
   return result;
 };
 
-export {getRandomIntInclusive, getRandomArbitrary, getRandomArrayElement, getNewArrayLenght, getRandomArray};
+const showAlert = (message) => {
+  const alertContainer = document.createElement('div');
+  alertContainer.style.zIndex = 100;
+  alertContainer.style.position = 'absolute';
+  alertContainer.style.left = 0;
+  alertContainer.style.top = 0;
+  alertContainer.style.right = 0;
+  alertContainer.style.padding = '10px 3px';
+  alertContainer.style.fontSize = '30px';
+  alertContainer.style.textAlign = 'center';
+  alertContainer.style.backgroundColor = 'red';
+  alertContainer.textContent = message;
+  document.body.append(alertContainer);
+
+  setTimeout(() => {
+    alertContainer.remove();
+  }, ALERT_SHOW_TIME);
+};
+
+const keyDownCallbackSuccess = (evt) => {
+  if (evt.key === 'Escape' || evt.key === 27) {
+    successContainer.remove();
+    document.body.removeEventListener('keydown', keyDownCallbackSuccess);
+  }
+};
+
+const clickCallbackSuccess = () => {
+  successContainer.remove();
+  document.body.removeEventListener('click', clickCallbackSuccess);
+};
+
+const showSuccess = () => {
+  document.body.append(successContainer);
+
+  document.body.addEventListener('keydown', keyDownCallbackSuccess);
+
+  document.body.addEventListener('click', clickCallbackSuccess);
+};
+
+const keyDownCallbackError = (evt) => {
+  if (evt.key === 'Escape' || evt.key === 27) {
+    errorContainer.remove();
+    document.body.removeEventListener('keydown', keyDownCallbackError);
+  }
+};
+
+const clickCallbackError = () => {
+  errorContainer.remove();
+  document.body.removeEventListener('click', clickCallbackError);
+};
+
+const callbackErrorButton = () => {
+  errorContainer.remove();
+  document.body.removeEventListener('click', callbackErrorButton);
+};
+
+const showError = () => {
+  document.body.append(errorContainer);
+
+  document.body.addEventListener('keydown', keyDownCallbackError);
+
+  document.body.addEventListener('click', clickCallbackError);
+
+  errorButton.addEventListener('click', callbackErrorButton);
+};
+
+export {getRandomIntInclusive, getRandomArbitrary, getRandomArrayElement, getNewArrayLenght, getRandomArray, showAlert, showSuccess, showError};

@@ -98,7 +98,9 @@ const createAds = () => {
     lng: getRandomArbitrary(LocationRange.LONGTITUDE.MIN, LocationRange.LONGTITUDE.MAX, LocationRange.ROUNDING),
   };
   return {
-    author: getRandomArrayElement(AVATARS),
+    author: {
+      avatar: getRandomArrayElement(AVATARS),
+    },
     offer: {
       title: getRandomArrayElement(TITLES),
       address: `${location.lat}, ${location.lng}`,

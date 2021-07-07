@@ -1,7 +1,5 @@
 // Создание карточки объявления для интерактивной карты
 
-import {createAds} from './ads.js';
-
 const engTypesToRus = {
   flat: 'Квартира',
   bungalow: 'Бунгало',
@@ -10,7 +8,6 @@ const engTypesToRus = {
   hotel: 'Отель',
 };
 
-const popupElementsList = document.querySelector('.map__canvas');
 const similarCardsTemplate = document.querySelector('#card').content.querySelector('.popup');
 
 const insertToDOM = (target, node) => {
@@ -36,8 +33,7 @@ const addPhotosToDOMFromFragment = (photos, newClass, currentTemplate) => {
   return photosFragment;
 };
 
-const generateAdMarkup = () => {
-  const ad = createAds();
+const generateAdMarkup = (ad) => {
 
   const popupElement = similarCardsTemplate.cloneNode(true);
 
@@ -76,29 +72,32 @@ const generateAdMarkup = () => {
   } else {
     popupElement.querySelector('.popup__text--time').textContent = `Заезд после ${ad.offer.checkin}, выезд до ${ad.offer.checkout}`;
   }
-
-  const featureListElement = popupElement.querySelector('.popup__features');
-  const modifiers = ad.offer.features.map((feature) => `${'.popup__feature'}--${feature}`);
-  featureListElement.querySelectorAll('.popup__feature').forEach((item) => {
-    const modifier = item.classList[1];
-    if (!modifiers.includes(modifier)) {
-      item.remove();
-    }
-  });
+  if (!ad.offer.features) {
+    popupElement.querySelector('.popup__features').remove;
+  } else {
+    const featureListElement = popupElement.querySelector('.popup__features');
+    const modifiers = ad.offer.features.map((feature) => `${'.popup__feature'}--${feature}`);
+    featureListElement.querySelectorAll('.popup__feature').forEach((item) => {
+      const modifier = item.classList[1];
+      if (!modifiers.includes(modifier)) {
+        item.remove();
+      }
+    });
+  }
   if (!ad.offer.description) {
     popupElement.querySelector('.popup__description').remove();
   } else {
     popupElement.querySelector('.popup__description').textContent = ad.offer.description;
   }
+  if (ad.offer.photos) {
+    const pics = addPhotosToDOMFromFragment(ad.offer.photos, 'popup__photo', similarCardsTemplate);
+    const parentNode = popupElement.querySelector('.popup__photos');
+    parentNode.innerHTML = '';
+    insertToDOM(parentNode, pics);
+    insertToDOM(popupElement, parentNode);
+  }
 
-  const pics = addPhotosToDOMFromFragment(ad.offer.photos, 'popup__photo', similarCardsTemplate);
-  const parentNode = popupElement.querySelector('.popup__photos');
-  parentNode.innerHTML = '';
-  insertToDOM(parentNode, pics);
-  insertToDOM(popupElement, parentNode);
-
-  popupElement.querySelector('.popup__avatar').src = ad.author;
-  insertToDOM(popupElementsList, popupElement);
+  popupElement.querySelector('.popup__avatar').src = ad.author.avatar;
 
   return popupElement;
 };
