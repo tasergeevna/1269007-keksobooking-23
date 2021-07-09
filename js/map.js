@@ -82,7 +82,14 @@ const setMainPinOnMap = (intMap, centerCoords, inputWithAddress) => {
   return mainPinMarker;
 };
 
+let addedMarkers = [];
+
 const setSimplePinsOnMap = (adsArray, intMap) => {
+  addedMarkers.forEach((marker) => {
+    marker.remove();
+  });
+
+  const updatedAddedMarkers = [];
 
   const simplePinIcon = L.icon({
     iconUrl: SIMPLE_PIN.URL,
@@ -110,7 +117,9 @@ const setSimplePinsOnMap = (adsArray, intMap) => {
           keepInView: true,
         },
       );
+    updatedAddedMarkers.push(marker);
   });
+  addedMarkers = updatedAddedMarkers;
 };
 
 export {setAddress, addInteractiveMap, setMainPinOnMap, setSimplePinsOnMap, TOKIO_CENTER, addressInput, mapClass};

@@ -1,7 +1,7 @@
 // Реализация формы: заполнение, условия заполнения, валидация
 import {sendData} from './api.js';
 import {addressInput, setAddress, TOKIO_CENTER} from './map.js';
-import { showSuccess } from './utils.js';
+import { showSuccess } from './messages.js';
 
 const TITLE_LENGTH = {
   MIN: 30,
@@ -41,9 +41,7 @@ const activation = (elemClass) => {
 
   const elems = element.querySelectorAll('select, input:not(#address), textarea, button');
   elems.forEach((elem) => {
-    if (elem.hasAttribute('disabled')) {
-      elem.removeAttribute('disabled', 'disabled');
-    }
+    elem.removeAttribute('disabled', 'disabled');
   });
 };
 
@@ -53,9 +51,7 @@ const deactivation = (elemClass) => {
 
   const elems = element.querySelectorAll('select, input, button, textarea');
   elems.forEach((elem) => {
-    if (!elem.hasAttribute('disabled')) {
-      elem.setAttribute('disabled', 'disabled');
-    }
+    elem.setAttribute('disabled', 'disabled');
   });
 };
 
@@ -106,6 +102,16 @@ const priceValidity = (inputName) => {
   });
 };
 
+const typeOfHousingValidity = (inputType, inputPrice) => {
+  inputType.addEventListener('change', (evt) => {
+    inputType.setCustomValidity('');
+    const type = evt.target.value;
+    inputPrice.setAttribute('min', typeToPrice[type]);
+    inputPrice.setAttribute('placeholder', typeToPrice[type]);
+    inputType.reportValidity();
+  });
+};
+
 const roomsValidity = (inputRooms, inputGuests) => {
   inputRooms.addEventListener('change', () => {
     inputRooms.setCustomValidity('');
@@ -150,16 +156,6 @@ const guestsValidity  = (inputGuests, inputRooms) => {
     }
 
     inputGuests.reportValidity();
-  });
-};
-
-const typeOfHousingValidity = (inputType, inputPrice) => {
-  inputType.addEventListener('change', (evt) => {
-    inputType.setCustomValidity('');
-    const type = evt.target.value;
-    inputPrice.setAttribute('min', typeToPrice[type]);
-    inputPrice.setAttribute('placeholder', typeToPrice[type]);
-    inputType.reportValidity();
   });
 };
 
@@ -225,12 +221,20 @@ const resetForm = () => {
 };
 
 
-const setUserFormSubmit = (formClass) => {
+const setUserFormSubmit = (formClass, interactiveMap, mainPin, centerCoords) => {
   document.querySelector(formClass).addEventListener('submit', (evt) => {
     evt.preventDefault();
     addressInput.removeAttribute('disabled', 'disabled');
     sendData(
       () => {
+        mainPin.setLatLng({
+          lat: centerCoords.LAT,
+          lng: centerCoords.LNG,
+        });
+        interactiveMap.setView({
+          lat: centerCoords.LAT,
+          lng: centerCoords.LNG,
+        }, 16);
         resetForm();
         showSuccess();
       },
@@ -254,4 +258,4 @@ const setUserFormReset = (formClass, interactiveMap, mainPin, centerCoords) => {
   });
 };
 
-export {activation, deactivation, FORM_CLASS, MAP_FILTERS_CLASS, formValidity, setUserFormSubmit, setUserFormReset};
+export {activation, deactivation, FORM_CLASS, MAP_FILTERS_CLASS, formValidity, setUserFormSubmit, setUserFormReset, filtersHousingType, filtersHousingPrice, filtersHousingRooms, filtersHousingGuests, filtersHousingFeatures};

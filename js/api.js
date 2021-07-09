@@ -1,4 +1,4 @@
-import {showAlert, showError} from './utils.js';
+import {showAlert, showError} from './messages.js';
 import { deactivation, MAP_FILTERS_CLASS } from './form.js';
 
 const TOTAL_POINTS = 10;
