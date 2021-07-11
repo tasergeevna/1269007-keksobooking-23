@@ -1,7 +1,3 @@
-// Вспомогательные функции
-
-//Функция, возвращающая случайное целое число из переданного диапазона включительно.
-
 const getRandomIntInclusive = (min, max) => {
   if (min < 0 || max < 0) {
     return 'Функция не принимает отрицательные значения!';
@@ -13,8 +9,6 @@ const getRandomIntInclusive = (min, max) => {
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
-
-//Функция, возвращающая случайное число с плавающей точкой из переданного диапазона включительно.
 
 const getRandomArbitrary = (min, max, numberOfDecimalSpaces) => {
   if (min < 0 || max < 0) {
@@ -41,9 +35,6 @@ const getRandomArray = (array) => {
   }
   return result;
 };
-
-// Функция взята из интернета и доработана
-// Источник - https://www.freecodecamp.org/news/javascript-debounce-example
 
 const debounce = (callback, timeoutDelay = 500) => {
   let timeoutId;

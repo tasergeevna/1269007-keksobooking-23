@@ -1,5 +1,4 @@
-// Реализация карты
-import {activation, FORM_CLASS, MAP_FILTERS_CLASS} from './form.js';
+import {activation, FORM_CONTAINER, MAP_FILTERS_CONTAINER} from './form.js';
 import {generateAdMarkup} from './card.js';
 
 const TOKIO_CENTER = {
@@ -35,8 +34,8 @@ const setAddress = (changingInput, centerCoords) => {
 const addInteractiveMap = (classForMap, centerCoords) => {
   const map = L.map(classForMap)
     .on('load', () => {
-      activation(FORM_CLASS);
-      activation(MAP_FILTERS_CLASS);
+      activation(FORM_CONTAINER);
+      activation(MAP_FILTERS_CONTAINER);
     })
     .setView({
       lat: centerCoords.LAT,

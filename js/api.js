@@ -1,5 +1,5 @@
 import {showAlert, showError} from './messages.js';
-import { deactivation, MAP_FILTERS_CLASS } from './form.js';
+import { deactivation, MAP_FILTERS_CONTAINER } from './form.js';
 
 const TOTAL_POINTS = 10;
 
@@ -13,7 +13,7 @@ const getData = (onSuccess) => {
         return response.json();
       }
       showAlert('Не удалось получить объявления. Попробуйте ещё раз');
-      deactivation(MAP_FILTERS_CLASS);
+      deactivation(MAP_FILTERS_CONTAINER);
       throw Error();
     })
     .then((ads) => {

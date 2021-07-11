@@ -1,15 +1,15 @@
-// Реализация формы: заполнение, условия заполнения, валидация
 import {sendData} from './api.js';
 import {addressInput, setAddress, TOKIO_CENTER} from './map.js';
 import { showSuccess } from './messages.js';
+import {avatarPreview, photoPreview, photoChooser, avatarChooser, uploadPhotos} from './photos.js';
 
 const TITLE_LENGTH = {
   MIN: 30,
   MAX: 100,
 };
 
-const FORM_CLASS = '.ad-form';
-const MAP_FILTERS_CLASS = '.map__filters';
+const FORM_CONTAINER = '.ad-form';
+const MAP_FILTERS_CONTAINER = '.map__filters';
 
 const adTitle = document.querySelector('#title');
 const priceForANight = document.querySelector('#price');
@@ -112,51 +112,46 @@ const typeOfHousingValidity = (inputType, inputPrice) => {
   });
 };
 
+const roomsToGuests = {
+  1: {
+    allowed: ['1'],
+    roomsMessage: 'Можно забронировать для одного гостя',
+    guestsMessage: 'Можно выбрать одну, две или три комнаты',
+  },
+  2: {
+    allowed:  ['1', '2'],
+    roomsMessage: 'Можно забронировать для одного или двух гостей',
+    guestsMessage: 'Можно выбрать две или три комнаты',
+  },
+  3: {
+    allowed: ['1', '2', '3'],
+    roomsMessage: 'Можно забронировать для одного, двух или трех гостей',
+    guestsMessage: 'Можно выбрать три комнаты',
+  },
+  100: {
+    allowed: ['0'],
+    roomsMessage: 'Нельзя забронировать для гостей',
+    guestsMessage: 'Можно выбрать помещение для мероприятий',
+  },
+};
+
+const guestsAndRoomsValidation = (inputRooms, inputGuests) => {
+  inputRooms.setCustomValidity('');
+  inputGuests.setCustomValidity('');
+  if (roomsToGuests[inputRooms.value] && !roomsToGuests[inputRooms.value].allowed.includes(inputGuests.value)) {
+    inputRooms.setCustomValidity(roomsToGuests[inputRooms.value].roomsMessage);
+    inputGuests.setCustomValidity(roomsToGuests[inputRooms.value].guestsMessage);
+  }
+  inputRooms.reportValidity();
+  inputGuests.reportValidity();
+};
+
 const roomsValidity = (inputRooms, inputGuests) => {
-  inputRooms.addEventListener('change', () => {
-    inputRooms.setCustomValidity('');
-    if (inputRooms.value === '1' && inputGuests.value !== '1') {
-      inputRooms.setCustomValidity('Можно забронировать для одного гостя');
-    }
-
-    if (inputRooms.value === '2' && inputGuests.value !== '1' && inputGuests.value !== '2') {
-      inputRooms.setCustomValidity('Можно забронировать для одного или двух гостей');
-    }
-    if (inputRooms.value === '3' && inputGuests.value !== '1' && inputGuests.value !== '2' && inputGuests.value !=='3') {
-      inputRooms.setCustomValidity('Можно забронировать для одного, двух или трех гостей');
-    }
-    if (inputRooms.value === '100' && inputGuests.value !== '0') {
-      inputRooms.setCustomValidity('Нельзя забронировать для гостей');
-    }
-    if (inputRooms.value === inputGuests.value) {
-      inputGuests.setCustomValidity('');
-    }
-
-    inputRooms.reportValidity();
-  });
+  inputRooms.addEventListener('change', () => guestsAndRoomsValidation(inputRooms, inputGuests));
 };
 
 const guestsValidity  = (inputGuests, inputRooms) => {
-  inputGuests.addEventListener('change', () => {
-    inputGuests.setCustomValidity('');
-    if (inputGuests.value === '1' && inputRooms.value !== '1' && inputRooms.value !== '2' && inputRooms.value !=='3') {
-      inputGuests.setCustomValidity('Можно выбрать одну, две или три комнаты');
-    }
-    if (inputGuests.value === '2' && inputRooms.value !== '2' && inputRooms.value !== '3') {
-      inputGuests.setCustomValidity('Можно выбрать две или три комнаты');
-    }
-    if (inputGuests.value === '3' && inputRooms.value !== '3') {
-      inputGuests.setCustomValidity('Можно выбрать три комнаты');
-    }
-    if (inputGuests.value === '0' && inputRooms.value !== '100') {
-      inputGuests.setCustomValidity('Можно выбрать помещение для мероприятий');
-    }
-    if (inputRooms.value === inputGuests.value) {
-      inputRooms.setCustomValidity('');
-    }
-
-    inputGuests.reportValidity();
-  });
+  inputGuests.addEventListener('change', () => guestsAndRoomsValidation(inputRooms, inputGuests));
 };
 
 const checkInValidity = (checkin, checkout) => {
@@ -213,13 +208,16 @@ const resetForm = () => {
 
   filtersHousingGuests.value = 'any';
 
+  avatarPreview.src = 'img/muffin-grey.svg';
+
+  photoPreview.src = 'img/muffin-grey.svg';
+
   filtersHousingFeatures.forEach((housingFeatures) => {
     housingFeatures.checked = false;
   });
 
   setAddress(addressInput, TOKIO_CENTER);
 };
-
 
 const setUserFormSubmit = (formClass, interactiveMap, mainPin, centerCoords) => {
   document.querySelector(formClass).addEventListener('submit', (evt) => {
@@ -258,4 +256,13 @@ const setUserFormReset = (formClass, interactiveMap, mainPin, centerCoords) => {
   });
 };
 
-export {activation, deactivation, FORM_CLASS, MAP_FILTERS_CLASS, formValidity, setUserFormSubmit, setUserFormReset, filtersHousingType, filtersHousingPrice, filtersHousingRooms, filtersHousingGuests, filtersHousingFeatures};
+const activationForForm = (interactiveMap, mainMarker) => {
+  setUserFormSubmit(FORM_CONTAINER, interactiveMap, mainMarker, TOKIO_CENTER);
+  setUserFormReset(FORM_CONTAINER, interactiveMap, mainMarker, TOKIO_CENTER);
+  formValidity();
+  uploadPhotos(avatarChooser, avatarPreview);
+  uploadPhotos(photoChooser, photoPreview);
+};
+
+
+export {activation, deactivation, FORM_CONTAINER, MAP_FILTERS_CONTAINER, filtersHousingType, filtersHousingPrice, filtersHousingRooms, filtersHousingGuests, filtersHousingFeatures, activationForForm};

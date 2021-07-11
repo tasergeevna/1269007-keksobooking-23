@@ -3,6 +3,11 @@ import { setSimplePinsOnMap } from './map.js';
 import {TOTAL_POINTS} from './api.js';
 import {debounce} from './utils.js';
 
+const typePrice = {
+  low: 10000,
+  high: 50000,
+};
+
 const onFilter = (ads, interactiveMap) => {
   const filteredAds = ads.filter((ad) => {
     let result = true;
@@ -10,16 +15,14 @@ const onFilter = (ads, interactiveMap) => {
       result = false;
     }
     if (filtersHousingPrice.value !== 'any') {
-      switch(filtersHousingPrice.value) {
-        case 'middle': {
-          return ad.offer.price >= 10000 && ad.offer.price <= 50000;
-        }
-        case 'low': {
-          return ad.offer.price < 10000;
-        }
-        case 'high': {
-          return ad.offer.price > 50000;
-        }
+      if (filtersHousingPrice.value === 'middle' && (ad.offer.price < typePrice.low || ad.offer.price > typePrice.high)) {
+        result = false;
+      }
+      if (filtersHousingPrice.value === 'low' &&  ad.offer.price > typePrice.low) {
+        result = false;
+      }
+      if (filtersHousingPrice.value === 'high' &&  ad.offer.price < typePrice.high) {
+        result = false;
       }
     }
     if (filtersHousingRooms.value !== 'any' && ad.offer.rooms !== Number(filtersHousingRooms.value)) {
@@ -50,45 +53,3 @@ const addFilters = (ads, interactiveMap) => {
 };
 
 export {addFilters, onFilter};
-
-
-/*
-
-
-const sameType = ads.filter(() => {
-
-});
-
-const samePrice = ads.filter(() => {
-
-});
-
-
-const sameRooms = ads.filter(() => {
-
-});
-
-const sameGuests = ads.filter(() => {
-
-});
-
-const similarAds = [
-  ...sameType,
-  ...samePrice,
-  ...sameRooms,
-  ...sameGuests,
-];
-
-
-const getAdsRank = (ads) => {
-  let rank = 0;
-  if (ads. === coatColorInput.value) {
-    rank += 2;
-  }
-  if (wizard.colorEyes === eyesColorInput.value) {
-    rank += 1;
-  }
-}
-
-*/
-
