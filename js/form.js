@@ -1,15 +1,25 @@
-// Реализация формы: заполнение, условия заполнения, валидация
 import {sendData} from './api.js';
 import {addressInput, setAddress, TOKIO_CENTER} from './map.js';
-import { showSuccess } from './utils.js';
+import { showSuccess } from './messages.js';
+import { onFilter} from './filter.js';
+import {avatarPreview, photoPreview, photoChooser, avatarChooser, uploadPhotos} from './photos.js';
 
 const TITLE_LENGTH = {
   MIN: 30,
   MAX: 100,
 };
 
-const FORM_CLASS = '.ad-form';
-const MAP_FILTERS_CLASS = '.map__filters';
+
+const typeToPrice = {
+  bungalow: '0',
+  flat: '1000',
+  hotel: '3000',
+  house: '5000',
+  palace: '10000',
+};
+
+const FORM_CONTAINER = '.ad-form';
+const MAP_FILTERS_CONTAINER = '.map__filters';
 
 const adTitle = document.querySelector('#title');
 const priceForANight = document.querySelector('#price');
@@ -27,23 +37,13 @@ const filtersHousingRooms = document.querySelector('#housing-rooms');
 const filtersHousingGuests = document.querySelector('#housing-guests');
 const filtersHousingFeatures = document.querySelectorAll('.map__checkbox');
 
-const typeToPrice = {
-  bungalow: '0',
-  flat: '1000',
-  hotel: '3000',
-  house: '5000',
-  palace: '10000',
-};
-
 const activation = (elemClass) => {
   const element = document.querySelector(elemClass);
   element.classList.remove(`${elemClass}--disabled`);
 
   const elems = element.querySelectorAll('select, input:not(#address), textarea, button');
   elems.forEach((elem) => {
-    if (elem.hasAttribute('disabled')) {
-      elem.removeAttribute('disabled', 'disabled');
-    }
+    elem.removeAttribute('disabled', 'disabled');
   });
 };
 
@@ -53,9 +53,7 @@ const deactivation = (elemClass) => {
 
   const elems = element.querySelectorAll('select, input, button, textarea');
   elems.forEach((elem) => {
-    if (!elem.hasAttribute('disabled')) {
-      elem.setAttribute('disabled', 'disabled');
-    }
+    elem.setAttribute('disabled', 'disabled');
   });
 };
 
@@ -88,79 +86,76 @@ const titleValidityInProcess = (inputName) => {
   });
 };
 
-const priceValidity = (inputName) => {
-  inputName.addEventListener('input', () => {
-    if (inputName.validity.rangeUnderflow) {
-      const minPrice = Number(inputName.getAttribute('min'));
-      inputName.setCustomValidity(`Минимальная стоимость - ${minPrice}`);
-    } else if (inputName.validity.rangeOverflow) {
-      const maxPrice = Number(inputName.getAttribute('max'));
-      inputName.setCustomValidity(`Максимальная стоимость - ${maxPrice}`);
-    } else if (inputName.validity.valueMissing) {
-      inputName.setCustomValidity('Это поле обязательно заполнить');
-    } else {
-      inputName.setCustomValidity('');
-    }
+const validatePriceAndHousing = (inputHousing, inputPrice) => {
+  inputPrice.setCustomValidity('');
+  inputHousing.setCustomValidity('');
+  inputPrice.setAttribute('min', typeToPrice[inputHousing.value]);
+  inputPrice.setAttribute('placeholder', typeToPrice[inputHousing.value]);
+  if (inputPrice.validity.rangeUnderflow) {
+    const minPrice = Number(inputPrice.getAttribute('min'));
+    inputPrice.setCustomValidity(`Минимальная стоимость - ${minPrice}`);
+  } else if (inputPrice.validity.rangeOverflow) {
+    const maxPrice = Number(inputPrice.getAttribute('max'));
+    inputPrice.setCustomValidity(`Максимальная стоимость - ${maxPrice}`);
+  } else if (inputPrice.validity.valueMissing) {
+    inputPrice.setCustomValidity('Это поле обязательно заполнить');
+  }
+  inputHousing.reportValidity();
+  inputPrice.reportValidity();
+};
 
-    inputName.reportValidity();
+const priceValidity = (inputHousing, inputPrice) => {
+  inputPrice.addEventListener('input', () => {
+    validatePriceAndHousing(inputHousing, inputPrice);
   });
+};
+
+const typeOfHousingValidity = (inputHousing, inputPrice) => {
+  inputHousing.addEventListener('change', () => {
+    validatePriceAndHousing(inputHousing, inputPrice);
+  });
+};
+
+const roomsToGuests = {
+  1: {
+    allowed: ['1'],
+    roomsMessage: 'Можно забронировать для одного гостя',
+    guestsMessage: 'Можно выбрать одну, две или три комнаты',
+  },
+  2: {
+    allowed:  ['1', '2'],
+    roomsMessage: 'Можно забронировать для одного или двух гостей',
+    guestsMessage: 'Можно выбрать две или три комнаты',
+  },
+  3: {
+    allowed: ['1', '2', '3'],
+    roomsMessage: 'Можно забронировать для одного, двух или трех гостей',
+    guestsMessage: 'Можно выбрать три комнаты',
+  },
+  100: {
+    allowed: ['0'],
+    roomsMessage: 'Нельзя забронировать для гостей',
+    guestsMessage: 'Можно выбрать помещение для мероприятий',
+  },
+};
+
+const guestsAndRoomsValidation = (inputRooms, inputGuests) => {
+  inputRooms.setCustomValidity('');
+  inputGuests.setCustomValidity('');
+  if (roomsToGuests[inputRooms.value] && !roomsToGuests[inputRooms.value].allowed.includes(inputGuests.value)) {
+    inputRooms.setCustomValidity(roomsToGuests[inputRooms.value].roomsMessage);
+    inputGuests.setCustomValidity(roomsToGuests[inputRooms.value].guestsMessage);
+  }
+  inputRooms.reportValidity();
+  inputGuests.reportValidity();
 };
 
 const roomsValidity = (inputRooms, inputGuests) => {
-  inputRooms.addEventListener('change', () => {
-    inputRooms.setCustomValidity('');
-    if (inputRooms.value === '1' && inputGuests.value !== '1') {
-      inputRooms.setCustomValidity('Можно забронировать для одного гостя');
-    }
-
-    if (inputRooms.value === '2' && inputGuests.value !== '1' && inputGuests.value !== '2') {
-      inputRooms.setCustomValidity('Можно забронировать для одного или двух гостей');
-    }
-    if (inputRooms.value === '3' && inputGuests.value !== '1' && inputGuests.value !== '2' && inputGuests.value !=='3') {
-      inputRooms.setCustomValidity('Можно забронировать для одного, двух или трех гостей');
-    }
-    if (inputRooms.value === '100' && inputGuests.value !== '0') {
-      inputRooms.setCustomValidity('Нельзя забронировать для гостей');
-    }
-    if (inputRooms.value === inputGuests.value) {
-      inputGuests.setCustomValidity('');
-    }
-
-    inputRooms.reportValidity();
-  });
+  inputRooms.addEventListener('change', () => guestsAndRoomsValidation(inputRooms, inputGuests));
 };
 
 const guestsValidity  = (inputGuests, inputRooms) => {
-  inputGuests.addEventListener('change', () => {
-    inputGuests.setCustomValidity('');
-    if (inputGuests.value === '1' && inputRooms.value !== '1' && inputRooms.value !== '2' && inputRooms.value !=='3') {
-      inputGuests.setCustomValidity('Можно выбрать одну, две или три комнаты');
-    }
-    if (inputGuests.value === '2' && inputRooms.value !== '2' && inputRooms.value !== '3') {
-      inputGuests.setCustomValidity('Можно выбрать две или три комнаты');
-    }
-    if (inputGuests.value === '3' && inputRooms.value !== '3') {
-      inputGuests.setCustomValidity('Можно выбрать три комнаты');
-    }
-    if (inputGuests.value === '0' && inputRooms.value !== '100') {
-      inputGuests.setCustomValidity('Можно выбрать помещение для мероприятий');
-    }
-    if (inputRooms.value === inputGuests.value) {
-      inputRooms.setCustomValidity('');
-    }
-
-    inputGuests.reportValidity();
-  });
-};
-
-const typeOfHousingValidity = (inputType, inputPrice) => {
-  inputType.addEventListener('change', (evt) => {
-    inputType.setCustomValidity('');
-    const type = evt.target.value;
-    inputPrice.setAttribute('min', typeToPrice[type]);
-    inputPrice.setAttribute('placeholder', typeToPrice[type]);
-    inputType.reportValidity();
-  });
+  inputGuests.addEventListener('change', () => guestsAndRoomsValidation(inputRooms, inputGuests));
 };
 
 const checkInValidity = (checkin, checkout) => {
@@ -180,7 +175,7 @@ const checkOutValidity = (checkout, chekin) => {
 const formValidity = () => {
   titleValidity(adTitle);
   titleValidityInProcess(adTitle);
-  priceValidity(priceForANight);
+  priceValidity(typeOfHousing, priceForANight);
   roomsValidity(rooms, guests);
   guestsValidity(guests, rooms);
   typeOfHousingValidity(typeOfHousing, priceForANight);
@@ -190,48 +185,46 @@ const formValidity = () => {
 
 const resetForm = () => {
   adTitle.value = '';
-
   priceForANight.value = '';
-
+  priceForANight.setAttribute('placeholder', '1000');
+  priceForANight.setAttribute('min', '1000');
   fieldset.value = '';
-
   features.forEach((feature) => {
     feature.checked = false;
   });
-
   rooms.value = '1';
-
   guests.value = '1';
-
   typeOfHousing.value = 'flat';
-
   checkIn.value = '12:00';
-
   checkOut.value = '12:00';
-
   filtersHousingType.value = 'any';
-
   filtersHousingPrice.value = 'any';
-
   filtersHousingRooms.value = 'any';
-
   filtersHousingGuests.value = 'any';
-
+  avatarPreview.src = 'img/muffin-grey.svg';
+  photoPreview.src = 'img/muffin-grey.svg';
   filtersHousingFeatures.forEach((housingFeatures) => {
     housingFeatures.checked = false;
   });
-
   setAddress(addressInput, TOKIO_CENTER);
 };
 
-
-const setUserFormSubmit = (formClass) => {
+const setUserFormSubmit = (formClass, interactiveMap, mainPin, centerCoords, ads) => {
   document.querySelector(formClass).addEventListener('submit', (evt) => {
     evt.preventDefault();
     addressInput.removeAttribute('disabled', 'disabled');
     sendData(
       () => {
+        mainPin.setLatLng({
+          lat: centerCoords.LAT,
+          lng: centerCoords.LNG,
+        });
+        interactiveMap.setView({
+          lat: centerCoords.LAT,
+          lng: centerCoords.LNG,
+        }, 16);
         resetForm();
+        onFilter(ads, interactiveMap);
         showSuccess();
       },
       new FormData(evt.target),
@@ -239,7 +232,7 @@ const setUserFormSubmit = (formClass) => {
   });
 };
 
-const setUserFormReset = (formClass, interactiveMap, mainPin, centerCoords) => {
+const setUserFormReset = (formClass, interactiveMap, mainPin, centerCoords, ads) => {
   document.querySelector(formClass).addEventListener('reset', (evt) => {
     evt.preventDefault();
     mainPin.setLatLng({
@@ -251,7 +244,17 @@ const setUserFormReset = (formClass, interactiveMap, mainPin, centerCoords) => {
       lng: centerCoords.LNG,
     }, 16);
     resetForm();
+    onFilter(ads, interactiveMap);
   });
 };
 
-export {activation, deactivation, FORM_CLASS, MAP_FILTERS_CLASS, formValidity, setUserFormSubmit, setUserFormReset};
+const activationForForm = (ads, interactiveMap, mainMarker) => {
+  setUserFormSubmit(FORM_CONTAINER, interactiveMap, mainMarker, TOKIO_CENTER, ads);
+  setUserFormReset(FORM_CONTAINER, interactiveMap, mainMarker, TOKIO_CENTER, ads);
+  formValidity();
+  uploadPhotos(avatarChooser, avatarPreview);
+  uploadPhotos(photoChooser, photoPreview);
+};
+
+
+export {activation, deactivation, FORM_CONTAINER, MAP_FILTERS_CONTAINER, filtersHousingType, filtersHousingPrice, filtersHousingRooms, filtersHousingGuests, filtersHousingFeatures, activationForForm};

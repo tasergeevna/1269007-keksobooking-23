@@ -1,24 +1,25 @@
-import {showAlert, showError} from './utils.js';
-import { deactivation, MAP_FILTERS_CLASS } from './form.js';
+import {showAlert, showError} from './messages.js';
+import { deactivation, MAP_FILTERS_CONTAINER } from './form.js';
 
 const TOTAL_POINTS = 10;
 
 const GET_URL = 'https://23.javascript.pages.academy/keksobooking/data';
 const POST_URL = 'https://23.javascript.pages.academy/keksobooking';
 
-const getData = (onSuccess) => {
+const getData = (onSuccess, onFail) => {
   fetch(GET_URL)
     .then((response) => {
       if (response.ok) {
         return response.json();
       }
       showAlert('Не удалось получить объявления. Попробуйте ещё раз');
-      deactivation(MAP_FILTERS_CLASS);
+      deactivation(MAP_FILTERS_CONTAINER);
       throw Error();
     })
     .then((ads) => {
       onSuccess(ads);
-    });
+    })
+    .catch(onFail);
 };
 
 const sendData = (onSuccess, body) => {

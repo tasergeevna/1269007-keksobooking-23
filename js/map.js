@@ -1,5 +1,4 @@
-// Реализация карты
-import {activation, FORM_CLASS, MAP_FILTERS_CLASS} from './form.js';
+import {activation, FORM_CONTAINER, MAP_FILTERS_CONTAINER} from './form.js';
 import {generateAdMarkup} from './card.js';
 
 const TOKIO_CENTER = {
@@ -35,8 +34,8 @@ const setAddress = (changingInput, centerCoords) => {
 const addInteractiveMap = (classForMap, centerCoords) => {
   const map = L.map(classForMap)
     .on('load', () => {
-      activation(FORM_CLASS);
-      activation(MAP_FILTERS_CLASS);
+      activation(FORM_CONTAINER);
+      activation(MAP_FILTERS_CONTAINER);
     })
     .setView({
       lat: centerCoords.LAT,
@@ -82,7 +81,18 @@ const setMainPinOnMap = (intMap, centerCoords, inputWithAddress) => {
   return mainPinMarker;
 };
 
+let addedMarkers = [];
+
+const removeSimpleMarkers = () => {
+  addedMarkers.forEach((marker) => {
+    marker.remove();
+  });
+};
+
 const setSimplePinsOnMap = (adsArray, intMap) => {
+  removeSimpleMarkers();
+
+  const updatedAddedMarkers = [];
 
   const simplePinIcon = L.icon({
     iconUrl: SIMPLE_PIN.URL,
@@ -98,7 +108,6 @@ const setSimplePinsOnMap = (adsArray, intMap) => {
       lng,
     },
     {
-      draggable: true,
       icon: simplePinIcon,
     },
     );
@@ -110,7 +119,9 @@ const setSimplePinsOnMap = (adsArray, intMap) => {
           keepInView: true,
         },
       );
+    updatedAddedMarkers.push(marker);
   });
+  addedMarkers = updatedAddedMarkers;
 };
 
-export {setAddress, addInteractiveMap, setMainPinOnMap, setSimplePinsOnMap, TOKIO_CENTER, addressInput, mapClass};
+export {setAddress, addInteractiveMap, setMainPinOnMap, setSimplePinsOnMap, removeSimpleMarkers, TOKIO_CENTER, addressInput, mapClass};

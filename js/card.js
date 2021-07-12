@@ -1,5 +1,3 @@
-// Создание карточки объявления для интерактивной карты
-
 const engTypesToRus = {
   flat: 'Квартира',
   bungalow: 'Бунгало',
@@ -78,7 +76,7 @@ const generateAdMarkup = (ad) => {
     const featureListElement = popupElement.querySelector('.popup__features');
     const modifiers = ad.offer.features.map((feature) => `${'.popup__feature'}--${feature}`);
     featureListElement.querySelectorAll('.popup__feature').forEach((item) => {
-      const modifier = item.classList[1];
+      const modifier = `.${item.classList[1]}`;
       if (!modifiers.includes(modifier)) {
         item.remove();
       }
@@ -95,6 +93,8 @@ const generateAdMarkup = (ad) => {
     parentNode.innerHTML = '';
     insertToDOM(parentNode, pics);
     insertToDOM(popupElement, parentNode);
+  } else {
+    popupElement.querySelector('.popup__photo').remove();
   }
 
   popupElement.querySelector('.popup__avatar').src = ad.author.avatar;
