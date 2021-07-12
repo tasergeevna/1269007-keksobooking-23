@@ -33,7 +33,7 @@ const onFilter = (ads, interactiveMap) => {
     const features = ad.offer.features || [];
     for (let i = 0; i < filtersHousingFeatures.length; i++) {
       const feature = filtersHousingFeatures[i];
-      if (feature.checked && features.includes(feature.value)) {
+      if (feature.checked && !features.includes(feature.value)) {
         return false;
       }
     }

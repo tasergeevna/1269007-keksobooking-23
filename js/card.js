@@ -93,6 +93,8 @@ const generateAdMarkup = (ad) => {
     parentNode.innerHTML = '';
     insertToDOM(parentNode, pics);
     insertToDOM(popupElement, parentNode);
+  } else {
+    popupElement.querySelector('.popup__photo').remove();
   }
 
   popupElement.querySelector('.popup__avatar').src = ad.author.avatar;

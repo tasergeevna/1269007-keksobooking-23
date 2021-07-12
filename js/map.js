@@ -108,7 +108,6 @@ const setSimplePinsOnMap = (adsArray, intMap) => {
       lng,
     },
     {
-      draggable: true,
       icon: simplePinIcon,
     },
     );

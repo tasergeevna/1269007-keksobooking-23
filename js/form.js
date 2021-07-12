@@ -185,45 +185,27 @@ const formValidity = () => {
 
 const resetForm = () => {
   adTitle.value = '';
-
   priceForANight.value = '';
-
   priceForANight.setAttribute('placeholder', '1000');
-
   priceForANight.setAttribute('min', '1000');
-
   fieldset.value = '';
-
   features.forEach((feature) => {
     feature.checked = false;
   });
-
   rooms.value = '1';
-
   guests.value = '1';
-
   typeOfHousing.value = 'flat';
-
   checkIn.value = '12:00';
-
   checkOut.value = '12:00';
-
   filtersHousingType.value = 'any';
-
   filtersHousingPrice.value = 'any';
-
   filtersHousingRooms.value = 'any';
-
   filtersHousingGuests.value = 'any';
-
   avatarPreview.src = 'img/muffin-grey.svg';
-
   photoPreview.src = 'img/muffin-grey.svg';
-
   filtersHousingFeatures.forEach((housingFeatures) => {
     housingFeatures.checked = false;
   });
-
   setAddress(addressInput, TOKIO_CENTER);
 };
 
