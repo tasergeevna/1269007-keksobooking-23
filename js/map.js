@@ -83,10 +83,14 @@ const setMainPinOnMap = (intMap, centerCoords, inputWithAddress) => {
 
 let addedMarkers = [];
 
-const setSimplePinsOnMap = (adsArray, intMap) => {
+const removeSimpleMarkers = () => {
   addedMarkers.forEach((marker) => {
     marker.remove();
   });
+};
+
+const setSimplePinsOnMap = (adsArray, intMap) => {
+  removeSimpleMarkers();
 
   const updatedAddedMarkers = [];
 
@@ -121,4 +125,4 @@ const setSimplePinsOnMap = (adsArray, intMap) => {
   addedMarkers = updatedAddedMarkers;
 };
 
-export {setAddress, addInteractiveMap, setMainPinOnMap, setSimplePinsOnMap, TOKIO_CENTER, addressInput, mapClass};
+export {setAddress, addInteractiveMap, setMainPinOnMap, setSimplePinsOnMap, removeSimpleMarkers, TOKIO_CENTER, addressInput, mapClass};

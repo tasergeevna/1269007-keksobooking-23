@@ -12,5 +12,9 @@ const mainMarker = setMainPinOnMap(interactiveMap, TOKIO_CENTER, addressInput);
 getData((ads) => {
   onFilter(ads, interactiveMap);
   addFilters(ads, interactiveMap);
-});
-activationForForm(interactiveMap, mainMarker);
+  activationForForm(ads, interactiveMap, mainMarker);
+},
+() => activationForForm([], interactiveMap, mainMarker),
+);
+
+

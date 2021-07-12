@@ -1,11 +1,21 @@
 import {sendData} from './api.js';
 import {addressInput, setAddress, TOKIO_CENTER} from './map.js';
 import { showSuccess } from './messages.js';
+import { onFilter} from './filter.js';
 import {avatarPreview, photoPreview, photoChooser, avatarChooser, uploadPhotos} from './photos.js';
 
 const TITLE_LENGTH = {
   MIN: 30,
   MAX: 100,
+};
+
+
+const typeToPrice = {
+  bungalow: '0',
+  flat: '1000',
+  hotel: '3000',
+  house: '5000',
+  palace: '10000',
 };
 
 const FORM_CONTAINER = '.ad-form';
@@ -26,14 +36,6 @@ const filtersHousingPrice = document.querySelector('#housing-price');
 const filtersHousingRooms = document.querySelector('#housing-rooms');
 const filtersHousingGuests = document.querySelector('#housing-guests');
 const filtersHousingFeatures = document.querySelectorAll('.map__checkbox');
-
-const typeToPrice = {
-  bungalow: '0',
-  flat: '1000',
-  hotel: '3000',
-  house: '5000',
-  palace: '10000',
-};
 
 const activation = (elemClass) => {
   const element = document.querySelector(elemClass);
@@ -84,31 +86,33 @@ const titleValidityInProcess = (inputName) => {
   });
 };
 
-const priceValidity = (inputName) => {
-  inputName.addEventListener('input', () => {
-    if (inputName.validity.rangeUnderflow) {
-      const minPrice = Number(inputName.getAttribute('min'));
-      inputName.setCustomValidity(`Минимальная стоимость - ${minPrice}`);
-    } else if (inputName.validity.rangeOverflow) {
-      const maxPrice = Number(inputName.getAttribute('max'));
-      inputName.setCustomValidity(`Максимальная стоимость - ${maxPrice}`);
-    } else if (inputName.validity.valueMissing) {
-      inputName.setCustomValidity('Это поле обязательно заполнить');
-    } else {
-      inputName.setCustomValidity('');
-    }
+const validatePriceAndHousing = (inputHousing, inputPrice) => {
+  inputPrice.setCustomValidity('');
+  inputHousing.setCustomValidity('');
+  inputPrice.setAttribute('min', typeToPrice[inputHousing.value]);
+  inputPrice.setAttribute('placeholder', typeToPrice[inputHousing.value]);
+  if (inputPrice.validity.rangeUnderflow) {
+    const minPrice = Number(inputPrice.getAttribute('min'));
+    inputPrice.setCustomValidity(`Минимальная стоимость - ${minPrice}`);
+  } else if (inputPrice.validity.rangeOverflow) {
+    const maxPrice = Number(inputPrice.getAttribute('max'));
+    inputPrice.setCustomValidity(`Максимальная стоимость - ${maxPrice}`);
+  } else if (inputPrice.validity.valueMissing) {
+    inputPrice.setCustomValidity('Это поле обязательно заполнить');
+  }
+  inputHousing.reportValidity();
+  inputPrice.reportValidity();
+};
 
-    inputName.reportValidity();
+const priceValidity = (inputHousing, inputPrice) => {
+  inputPrice.addEventListener('input', () => {
+    validatePriceAndHousing(inputHousing, inputPrice);
   });
 };
 
-const typeOfHousingValidity = (inputType, inputPrice) => {
-  inputType.addEventListener('change', (evt) => {
-    inputType.setCustomValidity('');
-    const type = evt.target.value;
-    inputPrice.setAttribute('min', typeToPrice[type]);
-    inputPrice.setAttribute('placeholder', typeToPrice[type]);
-    inputType.reportValidity();
+const typeOfHousingValidity = (inputHousing, inputPrice) => {
+  inputHousing.addEventListener('change', () => {
+    validatePriceAndHousing(inputHousing, inputPrice);
   });
 };
 
@@ -171,7 +175,7 @@ const checkOutValidity = (checkout, chekin) => {
 const formValidity = () => {
   titleValidity(adTitle);
   titleValidityInProcess(adTitle);
-  priceValidity(priceForANight);
+  priceValidity(typeOfHousing, priceForANight);
   roomsValidity(rooms, guests);
   guestsValidity(guests, rooms);
   typeOfHousingValidity(typeOfHousing, priceForANight);
@@ -183,6 +187,10 @@ const resetForm = () => {
   adTitle.value = '';
 
   priceForANight.value = '';
+
+  priceForANight.setAttribute('placeholder', '1000');
+
+  priceForANight.setAttribute('min', '1000');
 
   fieldset.value = '';
 
@@ -219,7 +227,7 @@ const resetForm = () => {
   setAddress(addressInput, TOKIO_CENTER);
 };
 
-const setUserFormSubmit = (formClass, interactiveMap, mainPin, centerCoords) => {
+const setUserFormSubmit = (formClass, interactiveMap, mainPin, centerCoords, ads) => {
   document.querySelector(formClass).addEventListener('submit', (evt) => {
     evt.preventDefault();
     addressInput.removeAttribute('disabled', 'disabled');
@@ -234,6 +242,7 @@ const setUserFormSubmit = (formClass, interactiveMap, mainPin, centerCoords) => 
           lng: centerCoords.LNG,
         }, 16);
         resetForm();
+        onFilter(ads, interactiveMap);
         showSuccess();
       },
       new FormData(evt.target),
@@ -241,7 +250,7 @@ const setUserFormSubmit = (formClass, interactiveMap, mainPin, centerCoords) => 
   });
 };
 
-const setUserFormReset = (formClass, interactiveMap, mainPin, centerCoords) => {
+const setUserFormReset = (formClass, interactiveMap, mainPin, centerCoords, ads) => {
   document.querySelector(formClass).addEventListener('reset', (evt) => {
     evt.preventDefault();
     mainPin.setLatLng({
@@ -253,12 +262,13 @@ const setUserFormReset = (formClass, interactiveMap, mainPin, centerCoords) => {
       lng: centerCoords.LNG,
     }, 16);
     resetForm();
+    onFilter(ads, interactiveMap);
   });
 };
 
-const activationForForm = (interactiveMap, mainMarker) => {
-  setUserFormSubmit(FORM_CONTAINER, interactiveMap, mainMarker, TOKIO_CENTER);
-  setUserFormReset(FORM_CONTAINER, interactiveMap, mainMarker, TOKIO_CENTER);
+const activationForForm = (ads, interactiveMap, mainMarker) => {
+  setUserFormSubmit(FORM_CONTAINER, interactiveMap, mainMarker, TOKIO_CENTER, ads);
+  setUserFormReset(FORM_CONTAINER, interactiveMap, mainMarker, TOKIO_CENTER, ads);
   formValidity();
   uploadPhotos(avatarChooser, avatarPreview);
   uploadPhotos(photoChooser, photoPreview);

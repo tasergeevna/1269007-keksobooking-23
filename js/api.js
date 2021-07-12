@@ -6,7 +6,7 @@ const TOTAL_POINTS = 10;
 const GET_URL = 'https://23.javascript.pages.academy/keksobooking/data';
 const POST_URL = 'https://23.javascript.pages.academy/keksobooking';
 
-const getData = (onSuccess) => {
+const getData = (onSuccess, onFail) => {
   fetch(GET_URL)
     .then((response) => {
       if (response.ok) {
@@ -18,7 +18,8 @@ const getData = (onSuccess) => {
     })
     .then((ads) => {
       onSuccess(ads);
-    });
+    })
+    .catch(onFail);
 };
 
 const sendData = (onSuccess, body) => {

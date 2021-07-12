@@ -10,33 +10,34 @@ const typePrice = {
 
 const onFilter = (ads, interactiveMap) => {
   const filteredAds = ads.filter((ad) => {
-    let result = true;
     if (filtersHousingType.value !== 'any' && ad.offer.type !== filtersHousingType.value) {
-      result = false;
+      return false;
     }
     if (filtersHousingPrice.value !== 'any') {
       if (filtersHousingPrice.value === 'middle' && (ad.offer.price < typePrice.low || ad.offer.price > typePrice.high)) {
-        result = false;
+        return false;
       }
       if (filtersHousingPrice.value === 'low' &&  ad.offer.price > typePrice.low) {
-        result = false;
+        return false;
       }
       if (filtersHousingPrice.value === 'high' &&  ad.offer.price < typePrice.high) {
-        result = false;
+        return false;
       }
     }
     if (filtersHousingRooms.value !== 'any' && ad.offer.rooms !== Number(filtersHousingRooms.value)) {
-      result = false;
+      return false;
     }
     if (filtersHousingGuests.value !== 'any' && ad.offer.guests !== Number(filtersHousingGuests.value)) {
-      result = false;
+      return false;
     }
-    filtersHousingFeatures.forEach((feature) => {
-      if (feature.checked && ad.offer.features && !ad.offer.features.includes(feature.value)) {
-        result = false;
+    const features = ad.offer.features || [];
+    for (let i = 0; i < filtersHousingFeatures.length; i++) {
+      const feature = filtersHousingFeatures[i];
+      if (feature.checked && features.includes(feature.value)) {
+        return false;
       }
-    });
-    return result;
+    }
+    return true;
   });
   setSimplePinsOnMap(filteredAds.slice(0, TOTAL_POINTS), interactiveMap);
 };

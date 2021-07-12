@@ -76,7 +76,7 @@ const generateAdMarkup = (ad) => {
     const featureListElement = popupElement.querySelector('.popup__features');
     const modifiers = ad.offer.features.map((feature) => `${'.popup__feature'}--${feature}`);
     featureListElement.querySelectorAll('.popup__feature').forEach((item) => {
-      const modifier = item.classList[1];
+      const modifier = `.${item.classList[1]}`;
       if (!modifiers.includes(modifier)) {
         item.remove();
       }
