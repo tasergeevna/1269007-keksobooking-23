@@ -212,7 +212,7 @@ const resetForm = () => {
 const setUserFormSubmit = (formClass, interactiveMap, mainPin, centerCoords, ads) => {
   document.querySelector(formClass).addEventListener('submit', (evt) => {
     evt.preventDefault();
-    addressInput.removeAttribute('disabled', 'disabled');
+    addressInput.removeAttribute('disabled');
     sendData(
       () => {
         mainPin.setLatLng({
